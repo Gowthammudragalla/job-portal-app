@@ -1,0 +1,15 @@
+{
+  "name": "job-portal-root",
+  "version": "1.0.0",
+  "description": "Full-stack Job Portal with React, Node.js, Express, MongoDB, and JWT",
+  "scripts": {
+    "backend": "npm --prefix backend run dev",
+    "frontend": "npm --prefix frontend run dev",
+    "install:all": "npm --prefix backend install && npm --prefix frontend install",
+    "build:frontend": "npm --prefix frontend run build"
+  },
+  "keywords": ["job-portal", "react", "nodejs", "express", "mongodb", "jwt"],
+  "author": "",
+  "license": "ISC"
+}
+
