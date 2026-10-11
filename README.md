@@ -169,81 +169,10 @@ From the root `Job-portal/` directory:
 
 ---
 
-## 🎓 Technical Interview Q&A Guide
-
-### Q1: Why React for the frontend?
-**Answer**: React provides a component-based architecture where UI elements like `JobCard`, `Navbar`, and `SearchBar` are modular and reusable. React's virtual DOM allows efficient re-rendering when filters or application states change without reloading the whole page.
-
-### Q2: Why Node.js & Express.js for the backend?
-**Answer**: Node.js operates on an event-driven, non-blocking I/O model, making it lightweight and suitable for I/O-intensive RESTful APIs. Express is a minimalist framework that provides clean routing, middleware pipelines, and request handling with low overhead.
-
-### Q3: Why MongoDB and Mongoose?
-**Answer**: MongoDB stores data as JSON-like documents (BSON), which maps naturally to JavaScript objects. Mongoose adds a schema layer on top of MongoDB for validation, type casting, default values, and reference population (`populate`).
-
-### Q4: Why doesn't MongoDB need traditional SQL foreign keys?
-**Answer**: SQL databases require physical relational constraints and JOIN operations across fixed tables. MongoDB uses **ID references** (e.g. `recruiterId` storing an `ObjectId`). Mongoose's `.populate()` replaces references with referenced documents at query time, keeping the database flexible while retaining relational integrity.
-
-### Q5: What is JWT and how does it identify a user?
-**Answer**: JSON Web Token is a compact, URL-safe standard used for securely transmitting information between parties as a JSON object. A JWT consists of three parts:
-- **Header**: Signing algorithm used (e.g. HS256).
-- **Payload**: User claims (`userId`, `role`, expiration).
-- **Signature**: Verifies that the sender is authentic and the token hasn't been tampered with.
-When the user logs in, the backend signs the JWT with `JWT_SECRET`. On subsequent requests, the frontend sends this token in the `Authorization: Bearer <token>` header. The backend verifies the signature and decodes the `userId` and `role`.
-
-### Q6: Authentication vs Authorization?
-**Answer**:
-- **Authentication**: Verifies *who* the user is (e.g., verifying email & bcrypt password match, generating JWT).
-- **Authorization**: Determines *what permissions* the authenticated user has (e.g., role-based middleware checking if `role === 'recruiter'` before allowing `POST /api/jobs`).
-
-### Q7: What is middleware in Express?
-**Answer**: Middleware functions are functions that have access to the request (`req`), response (`res`), and the `next` function in the application’s request-response cycle. They can execute code, modify `req` / `res`, end the request, or call `next()` to pass control to the next middleware. Example: `verifyToken` inspects the Authorization header, validates the JWT, and attaches `req.user`.
-
-### Q8: How does the "Apply Job" flow work end-to-end?
-```text
-1. Student clicks "Apply Now" in React UI.
-2. Frontend sends POST /api/applications with { jobId } and JWT in Authorization header.
-3. verifyToken middleware verifies JWT and attaches req.user = { userId, role }.
-4. authorizeRoles("student") ensures only students can proceed.
-5. Controller verifies job exists and checks if application already exists for this (studentId, jobId).
-6. New Application document is saved to MongoDB.
-7. 201 Created response sent back to React UI.
-8. React updates button state to "Applied ✓".
-```
-
-### Q9: How are duplicate applications prevented?
-**Answer**: Through a two-layer defense:
-1. **Controller check**: `Application.findOne({ studentId, jobId })` returns 400 Bad Request before attempting to insert.
-2. **Database constraint**: Mongoose schema defines a compound unique index:
-   `applicationSchema.index({ studentId: 1, jobId: 1 }, { unique: true });`
-   This guarantees that even with concurrent requests, MongoDB will reject duplicates with an `E11000` duplicate key error.
-
----
-
 ## 🧪 Demo User Accounts
 
 | Role | Email | Password |
 | :--- | :--- | :--- |
 | **Recruiter** | `recruiter@google.com` | `Password123` |
 | **Student** | `alice@university.edu` | `SecretPassword1` |
-
----
-
-## 📤 Pushing to GitHub
-
-To publish this project to your own GitHub repository:
-
-1. Create a new repository on GitHub (e.g., `job-portal`).
-2. Inside the `Job-portal` directory, initialize Git (if not already initialized):
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit: Complete full-stack Job Portal project"
-   ```
-3. Link and push to your remote GitHub repository:
-   ```bash
-   git branch -M main
-   git remote add origin https://github.com/<your-username>/<your-repo-name>.git
-   git push -u origin main
-   ```
-*(Note: `.env` and `node_modules` are excluded by `.gitignore` to protect credentials).*
 
